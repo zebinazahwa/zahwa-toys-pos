@@ -1,0 +1,19 @@
+# File ini memberitahu Git: "Jangan ikutkan file/folder di bawah ini ke GitHub"
+
+# Folder bawaan OS yang tidak perlu diupload
+.DS_Store
+Thumbs.db
+
+# File konfigurasi IDE (VSCode, dll)
+.vscode/
+.idea/
+
+# Jangan upload koneksi database asli (keamanan!)
+# Tapi file koneksi.php kita tetap diupload karena sudah pakai localhost (aman)
+
+# File log error PHP yang tidak perlu
+*.log
+
+# File backup yang besar (sudah kita sertakan zahwa_toys_backup.sql)
+# Jika tidak mau backup sql diupload, uncomment baris di bawah:
+# *.sql
