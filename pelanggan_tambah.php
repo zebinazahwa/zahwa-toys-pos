@@ -1,11 +1,14 @@
 <?php
+require_once 'auth_check.php';
+?>
+<?php
 // ======= FILE: pelanggan_tambah.php (Pos Pendaftaran Member Baru) =======
 
 // Syarat hidup PHP agar ngga mandul/tak punya nyawa ke Database:
-require_once 'koneksi.php';
+require_once 'backend/koneksi.php';
 
 // Masukkan topi dan jubah desain visual dari file header
-include 'header.php';
+include 'frontend/header.php';
 
 // === LOGIKA SANG ARSITEK PENDATAAN MASUK ===
 // if(isset($_POST...)) = Mendeteksi jika jari pengunjung nggak iseng numpang lewat, tapi benar-benar MENEKAN / "Trigger" Tombol "Simpan" di Form bawah yang name="simpan".  
@@ -30,12 +33,12 @@ if(isset($_POST['simpan'])) {
     if($simpan) {
         // Echo memunculkan trik dewa JAVASCRIPT kilat.
         // Javascript Alert nampilin PopUp dari atas browser layarnya. Habis user klik (OK) di popup itu, baris window.location mindahin/lempar kaget orang itu balik ke jalan pulang menu Data Pelanggan.
-        echo "<script>alert('YES! Pelanggan langganan sukses dibuat dan terekod di database MySQL!'); window.location='pelanggan.php';</script>";
+        echo "<script>alert('Data pelanggan berhasil disimpan.'); window.location='pelanggan.php';</script>";
         
     // Ya tapi kalo MySQL nya yang ngambek misalnya entah karena apa...
     } else {
         // Kirim sinyal kotak berwarna merah (alert-danger nya css kita) ngomong "Gagal" lah apalagi. Palingan tabel salah ejaan di dbnya.
-        echo "<div class='alert alert-danger'>Yahh, Gagal lho nyimpan data pelanggan baru. Hubungi Programmer Zebina cepaattt!</div>";
+        echo "<div class='alert alert-danger'>Gagal menyimpan data pelanggan. Silakan hubungi administrator sistem.</div>";
     }
 }
 ?>
@@ -43,7 +46,7 @@ if(isset($_POST['simpan'])) {
 <!-- === KANVAS HTML PEMBUAT KOTAK ISIAN (FORMULIR/FORM) === -->
 
 <!-- Sub Judul Halaman -->
-<h2>Buat / Tambah Rekap Pelanggan Baru Toko</h2>
+<h2>Tambah Pelanggan Baru</h2>
 
 <!-- Ruang pembungkus estetik berlayar tebal belakang CSS -->
 <div class="card">
@@ -53,30 +56,30 @@ if(isset($_POST['simpan'])) {
         
         <!-- Grup Isian buat nge-Spasi CSS -->
         <div class="form-group">
-            <label>Pengisian Nama Lengkap Pelanggan (Pria/Wanita)</label>
+            <label>Nama Lengkap</label>
             <!-- Kotak KETIK biasa Tipe Teks. Nama pengait gawangnya Adalah `name="nama"`. Parameter ini ditangkap Truk POST PHP di atas. REQUIRED di ujung itu aturan keras bahwa Gaboleh kosong, harus diisi! Placeholder itu cuma abu-abu penuntun ngetik  -->
-            <input type="text" name="nama" class="form-control" required placeholder="Contoh Pengisian: Bapak Andi Sutiyo">
+            <input type="text" name="nama" class="form-control" required placeholder="Contoh: Andi Sutiyo">
         </div>
         
         <!-- Grup Spasi Isian -->
         <div class="form-group">
-            <label>Jalan / Alamat Detail</label>
+            <label>Alamat</label>
             <!-- Tag `textarea` ini inputan yang kotaknya GEDE/Tingggi banget dan bisa di enter dalemnya. Parameter ROWS=3 artinya standar awal minimal 3 Baris tingginya -->
-            <textarea name="alamat" class="form-control" rows="3" placeholder="Masukkan alamat lengkap domisili pembeli (Opsional sihhh) ..."></textarea>
+            <textarea name="alamat" class="form-control" rows="3" placeholder="Masukkan alamat lengkap (Opsional)"></textarea>
         </div>
         
         <!-- Grup Teks ketiga -->
         <div class="form-group">
-            <label>Nomor Jaringan Telepon / WA (Awali 08...)</label>
+            <label>Nomor Telepon</label>
             <!-- Kotak input biasa -->
-            <input type="text" name="telepon" class="form-control" placeholder="Angka Contoh Pengisian: 08123xxxx">
+            <input type="text" name="telepon" class="form-control" placeholder="Contoh: 08123456789">
         </div>
         
         <!-- NAH INI, PEMICU PELATUK API UNTUK MENGIRIM KESELURUHAN TEKS DALAM FORMULIR KE TRUK $_POST TADI -->
-        <button type="submit" name="simpan" class="btn">Rekam ke Pencatatan Data</button>
+        <button type="submit" name="simpan" class="btn">Simpan Data</button>
         
         <!-- Kalo males lanjutin ngetik, di PHP mending buang pakai Hyperlink Link lari ke `pelanggan.php`. Jadi data ga sempet kesimpan -->
-        <a href="pelanggan.php" class="btn btn-danger">Halahh, Males Ngetik, Mundur deh! (Batal)</a>
+        <a href="pelanggan.php" class="btn btn-danger">Batal</a>
         
     <!-- Selesai Blok Kerajaan Formulirnya. Semua isi inputnya tertangani ... -->
     </form>
@@ -85,5 +88,5 @@ if(isset($_POST['simpan'])) {
 
 <?php
 // Sama kaya yang lain. Sisipkan potongan File Kaki dan penutup container HTML-nya!
-include 'footer.php';
+include 'frontend/footer.php';
 ?>

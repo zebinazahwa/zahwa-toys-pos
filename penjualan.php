@@ -1,12 +1,15 @@
 <?php
+require_once 'auth_check.php';
+?>
+<?php
 // ======= FILE: penjualan.php (Layar Kasir Mesin Pinto Utama) =======
 
 // Syarat hidup PHP agar ngga mandul/tak punya nyawa ke Database Zahwa Toys:
-require_once 'koneksi.php';
+require_once 'backend/koneksi.php';
 
 // Memastikan bahwa Session Keranjang itu tidak pernah mati (dihidupkan paksa/pasti via Header).
 // Di dalam file header.php ini ada tulisan session_start();
-include 'header.php';
+include 'frontend/header.php';
 
 // == MEMBUAT KERANJANG VIRTUAL DULU DI OTAK KOMPUTER (SESSION) ==
 // IF: Coba dengerin mesin, BILA MANA (isset) belum ada sama sekali panci bernama 'cart' di Session...
@@ -51,12 +54,12 @@ if(isset($_POST['tambah_keranjang'])) {
                 ];
             }
             // Selesai menroli! Munculin pesan Puji Syukur pakai PopUP HTML ijo (Success).
-            echo "<div class='alert alert-success'>Asikk... Berhasil masuk troli bayaran! Lanjut scan lagi.</div>";
+            echo "<div class='alert alert-success'>Produk berhasil ditambahkan ke keranjang belanja.</div>";
             
         // NAH, KALO STOK GUDANGNYA AJA GA CUKUP (MISAL STOK TINGGAL 2, KASIR INPUT 10)
         } else {
             // TERIAK PAKAI BALON MERAH (Danger) nolak perintah kasir. Kasih tau sisa stok real-nya berapa.
-            echo "<div class='alert alert-danger'>YAHH AMPUN! Stok di gudang tekorr! Cuma sisa ".$dt_produk['stok']." pc aja kak!</div>";
+            echo "<div class='alert alert-danger'>Maaf, stok produk tidak mencukupi. Sisa stok: ".$dt_produk['stok']." unit.</div>";
         }
     }
 }
@@ -73,6 +76,36 @@ if(isset($_GET['hapus_cart'])) {
     
     // Lempar Browser nge-refresh url nya biar bersih dari tanda `?hapus_cart=9` itu. Pake Javascript Jumper Loc.
     echo "<script>window.location='penjualan.php';</script>";
+}
+
+// === LOGIKA BARU: MENGHAPUS SEMUA ISI KERANJANG (KOSONGKAN) ===
+if(isset($_GET['hapus_semua'])) {
+    unset($_SESSION['cart']);
+    echo "<script>window.location='penjualan.php';</script>";
+}
+
+// === LOGIKA BARU: UPDATE JUMLAH DI KERANJANG ===
+if(isset($_POST['update_cart'])) {
+    $id_update = $_POST['produk_id'];
+    $qty_baru = (int)$_POST['jumlah'];
+
+    // Cek Stok Gudang Dulu sebelum update
+    $cek = mysqli_query($koneksi, "SELECT stok FROM produk WHERE id='$id_update'");
+    $d = mysqli_fetch_assoc($cek);
+
+    if($qty_baru > 0 && $d['stok'] >= $qty_baru) {
+        $_SESSION['cart'][$id_update]['jumlah'] = $qty_baru;
+        session_write_close();
+        echo "<script>alert('Jumlah pesanan berhasil diperbarui!'); window.location='penjualan.php';</script>";
+        exit;
+    } else if($qty_baru <= 0) {
+        unset($_SESSION['cart'][$id_update]); // Jika 0 atau minus, hapus aja
+        session_write_close();
+        echo "<script>window.location='penjualan.php';</script>";
+        exit;
+    } else {
+        echo "<div class='alert alert-danger'>Gagal! Stok di gudang tidak cukup untuk jumlah tersebut.</div>";
+    }
 }
 
 // === LOGIKA PENGHAKIMAN KE-3: BAYAR TRANSAKSI (CHECKOUT) KASIRRR ===
@@ -128,12 +161,12 @@ if(isset($_POST['checkout'])) {
         unset($_SESSION['cart']);
         
         // Munculkan PopUp Alert JS bahwa KASIR SUKSES. Lalu lempar halaman menyebrang jalan ke `detail_penjualan.php` (Catatan Histori).
-        echo "<script>alert('YES! BILL Transaksi Kasir LUNAS. STOK UDAG Disesuaikan.'); window.location='detail_penjualan.php';</script>";
+        echo "<script>alert('Transaksi berhasil diselesaikan. Stok produk telah diperbarui.'); window.location='detail_penjualan.php';</script>";
         
     // Kalau Sistem Utama (Nota Induk Error)
     } else {
         // Munculin PopUp ERROR PHP
-        echo "<div class='alert alert-danger'>KESALAHAN GAWAT! Nota Kasir Gagal DICETAK TEROBOSAN! Hub. Developer Anda.</div>";
+        echo "<div class='alert alert-danger'>Terjadi kesalahan sistem. Gagal memproses transaksi. Silakan hubungi teknisi.</div>";
     }
 }
 ?>
@@ -141,11 +174,11 @@ if(isset($_POST['checkout'])) {
 <!-- === STUDIO UTAMA TAMPILAN GRAFIS WEB KASIR === -->
 
 <!-- Judul Halaman Raksasa -->
-<h2>Pusat Panel Kasir / POS Pintar</h2>
+<h2>Sistem Penjualan (POS)</h2>
 
 <!-- Kartu 1: Area Tukang Scan Barcode Mainan -->
 <div class="card" style="margin-bottom: 20px;">
-    <h3>LANGKAH 1. Pemindaian Barang Kasir</h3>
+    <h3>Langkah 1: Input Produk</h3>
     
     <!-- Bentuk form pengiriman POST ke alat pelahap PHP "Cart" baris atas -->
     <!-- Display Flex CSS: Bikin kotak2 isiannya dijejer rapat LURUs menyamping sejajar. Kek barcode kasir beneran -->
@@ -153,12 +186,12 @@ if(isset($_POST['checkout'])) {
         
         <!-- Pilihan Dropdown Mainan -->
         <div class="form-group" style="flex: 1;"> <!-- flex 1 artinya serakah nyita tempat melar ke kanan -->
-            <label>Menu Pilih Daftar Mainan ETALASE</label>
+            <label>Daftar Produk</label>
             
             <!-- Kotak Tag Select HTML. Untuk ngebuka daftar gulung orang milih opsional Name nya 'produk_id'. WAJIB ISI (REQ) -->
             <select name="produk_id" class="form-control" required>
                 <!-- Opsi Pajangan pertama doang -->
-                <option value="">-- Ketik Cari atau Scroll Pilih --</option>
+                <option value="">-- Cari atau Pilih Produk --</option>
                 <?php
                 // Tampilkan aja semua barang YG STOKNYA MASIH ADA DI ATAS NOL (> 0). Ngapain nampilin barang habis stock!  
                 $q_produk = mysqli_query($koneksi, "SELECT * FROM produk WHERE stok > 0");
@@ -166,7 +199,7 @@ if(isset($_POST['checkout'])) {
                 // Looping ngecitak <OPTION> buat nempelin barang db dlm daftar gulung select 
                 while($p = mysqli_fetch_assoc($q_produk)) {
                     // Cetak valuenya berupa (ID ASLI MYSQL) dan tulisannya ya harga rupah sama Cek Saldo Stock
-                    echo "<option value='".$p['id']."'>".$p['nama_produk']."  || (Rp ".number_format($p['harga'],0,',','.').") || Sisa Toko: ".$p['stok']." pc</option>";
+                    echo "<option value='".$p['id']."'>".$p['nama_produk']." || (Rp ".number_format($p['harga'],0,',','.').") || Stok: ".$p['stok']." Unit</option>";
                 }
                 ?>
             <!-- Tutup Kotak Gulung -->
@@ -175,14 +208,14 @@ if(isset($_POST['checkout'])) {
         
         <!-- Pilihan Ketikan Kuantitas (Jumlah yg diorder) -->
         <div class="form-group" style="width: 150px;">
-            <label>Jml Order Beli</label>
+            <label>Jumlah</label>
             <!-- Tipe data angka number mulsa dr bates Min 1 -->
             <input type="number" name="jumlah" class="form-control" value="1" min="1" required>
         </div>
         
         <!-- Tombol Masuk Ke Troli Virtual Cart (Pemicu Pelatuk) -->
         <div class="form-group">
-            <button type="submit" name="tambah_keranjang" class="btn">+ Tembak Data Troli</button>
+            <button type="submit" name="tambah_keranjang" class="btn">Tambahkan ke Keranjang</button>
         </div>
         
     </form>
@@ -192,18 +225,18 @@ if(isset($_POST['checkout'])) {
 <!-- Kartu 2: Layar Menampilkan Tabel Trolil Belanjaan Sementara Pelanggan. Ini BELUM ngaruh ke database sama sekali, murni mengapung di Session -->
 <div class="card">
     
-    <h3>LANGKAH 2. Antrian Keranjang Belanjanya si Pelanggan</h3>
+    <h3>Langkah 2: Keranjang Belanja</h3>
     
     <!-- Papan Catur Mejanya (Table html) -->
     <table class="table">
         <!-- Atap Kop Judul Koloman Meja -->
         <thead>
             <tr>
-                <th>Nama Produk Diambil</th>
-                <th>Harga Satuan Label</th>
-                <th width="80px">Jumlah</th>
-                <th>Subtotal Per item</th>
-                <th width="100px">Buang</th>
+                <th>Nama Produk</th>
+                <th>Harga Satuan</th>
+                <th width="120px">Jumlah</th>
+                <th>Subtotal</th>
+                <th width="100px">Aksi</th>
             </tr>
         </thead>
         
@@ -230,14 +263,22 @@ if(isset($_POST['checkout'])) {
                 <!-- Lempar echo mencetak tulisan pancingan array SESSION: Nama, Harga Rupiah, Jumlah pcs... -->
                 <td><?php echo $item['nama_produk']; ?></td>
                 <td>Rp <?php echo number_format($item['harga'],0,',','.'); ?></td>
-                <td><?php echo $item['jumlah']; ?></td>
+                <td>
+                    <form method="POST" action="" style="display: flex; gap: 5px;">
+                        <input type="hidden" name="produk_id" value="<?php echo $id; ?>">
+                        <input type="number" name="jumlah" value="<?php echo $item['jumlah']; ?>" min="1" class="form-control" style="width: 60px; padding: 5px;">
+                        <button type="submit" name="update_cart" class="btn btn-sm" style="background-color: #6367FF; color: white; padding: 5px 8px;" title="Simpan Perubahan">
+                            Simpan
+                        </button>
+                    </form>
+                </td>
                 
                 <!-- Format penulisan angka uang untuk di ujung tabel (Sub uang td) -->
                 <td>Rp <?php echo number_format($sub,0,',','.'); ?></td>
                 
                 <!-- Tombol Berdarah untuk nge-Drop buang barang dr troli klu orgnya ngaku gajadi uang cekak (Bawa embel URL '?hapus_cart=' lalu gembokin pake nama si Array Laci $id nya dia) -->
                 <td>
-                    <a href="penjualan.php?hapus_cart=<?php echo $id; ?>" class="btn btn-sm btn-danger">Buang!</a>
+                    <a href="penjualan.php?hapus_cart=<?php echo $id; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus item ini dari keranjang?')">Hapus</a>
                 </td>
             </tr>
             <?php 
@@ -247,7 +288,7 @@ if(isset($_POST['checkout'])) {
             // Nah sebaliknya, KALO KERANJANG VIRTUAL KOSONG ALIAS MELOMPONG?
             } else {
                 // Cetak HMTL tulisn nyinyir tengah pake Colspan megar 5 lobang menyatu td. Stylenya dikasih Abu (999) dan italic (miring)
-                echo "<tr><td colspan='5' align='center' style='color: #999;font-style:italic;'>Aduh Pak Kasir, Keranjangnya aja Masih pada Kopong nih! Scan Mainannya lah..</td></tr>";
+                echo "<tr><td colspan='5' align='center' style='color: #999;font-style:italic;'>Keranjang belanja masih kosong. Silakan pilih produk untuk memulai transaksi.</td></tr>";
             }
             ?>
         </tbody>
@@ -256,13 +297,19 @@ if(isset($_POST['checkout'])) {
         <tfoot>
             <!-- Bagian ini nyatuin ruang (Colspan) sampe 3 kolom jadi 1 utk bikin space lapang -->
             <tr>
-                <th colspan="3" style="text-align: right;">Total Kasir Yang Mesti Dibayar Orang Ini:</th>
+                <th colspan="3" style="text-align: right;">Total Pembayaran:</th>
                 <!-- Tampilkan Total hasil mesin Kalkukator kita ++ tadi Pakai Rupiah Cantik, tebal Warna Header Merah -->
                 <th colspan="2" style="color: #6367FF; font-size: 18px;">Rp <?php echo number_format($grand_total,0,',','.'); ?></th>
             </tr>
         </tfoot>
     <!-- Nutup papannya utuh -->
     </table>
+
+    <?php if(!empty($_SESSION['cart'])) { ?>
+    <div style="text-align: right; margin-top: 10px;">
+        <a href="penjualan.php?hapus_semua=1" class="btn btn-sm" style="background-color: #dc3545; color: white;" onclick="return confirm('Kosongkan semua isi keranjang?')">Kosongkan Keranjang</a>
+    </div>
+    <?php } ?>
 
 
     <!-- === BAGIAN EKSEKUSOR PEMUAS KASIR CHECKOUT (PEMBAYARAN DITERIMA) === -->
@@ -276,10 +323,10 @@ if(isset($_POST['checkout'])) {
         
         <!-- Kotak isian KTP Pelanggannya (Select Opsi gulung) -->
         <div class="form-group" style="max-width: 400px;">
-            <label>Nempelin Bon Ini Ke Anggota Member / Pelanggan Tercatat Di Kasir (Khusus Member)</label>
+            <label>Pilih Pelanggan (Opsional)</label>
             <select name="pelanggan_id" class="form-control">
                 <!-- Opsi default nya ini Value Kosong "" Bagaikan Pembeli Casual Jalanan -->
-                <option value="">-- Pembeli Kasual / Umum Lewat Biasa --</option>
+                <option value="">-- Pelanggan Umum --</option>
                 <?php
                 // Tampilkan Data Semua Pelanggan di MySQL untuk dipilih kasir..
                 $q_pel = mysqli_query($koneksi, "SELECT * FROM pelanggan");
@@ -292,7 +339,7 @@ if(isset($_POST['checkout'])) {
         
         <!-- TOMBOL BAYAR SEBESAR TRUK / SANGAT CRITICAL (Warna Ijo #28a745, lebae 300px gess) -->
         <!-- Dilengkapi bumbu proteksi JAVASCRIPT onclick Alert confirm biar gbs dibatalkan kalau kepencet. -->
-        <button type="submit" name="checkout" class="btn" style="background-color: #28a745; width: 300px; font-size: 16px; padding: 15px;" onclick="return confirm('Sudah Anda Cek Uang Orang Tersebut? YAKIN Cetak Bon Pembayaran FIX Ini??')">Bayar & Terima Duit (KLIK JIKA SUDAH)</button>
+        <button type="submit" name="checkout" class="btn" style="background-color: #28a745; width: 300px; font-size: 16px; padding: 15px;" onclick="return confirm('Apakah Anda yakin ingin memproses transaksi ini?')">Proses Pembayaran</button>
     </form>
     
     <?php } // Kurung Penutup dari aturan If-Tidak Kosong Tadi ?>
@@ -300,8 +347,48 @@ if(isset($_POST['checkout'])) {
 <!-- Pintu Tutup Kotak Kardus Card HTML Layar putih -->
 </div>
 
+<!-- Kartu 3: Transaksi Terakhir (Quick Access Edit/Hapus) -->
+<div class="card" style="margin-top: 20px; border-top: 4px solid #6367FF;">
+    <h3>Riwayat Transaksi Terbaru</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>No. Struk</th>
+                <th>Waktu</th>
+                <th>Pelanggan</th>
+                <th>Total</th>
+                <th width="80px">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $q_recent = mysqli_query($koneksi, "
+                SELECT penjualan.*, pelanggan.nama_pelanggan 
+                FROM penjualan 
+                LEFT JOIN pelanggan ON penjualan.pelanggan_id = pelanggan.id 
+                ORDER BY penjualan.id DESC LIMIT 5
+            ");
+            while($r = mysqli_fetch_assoc($q_recent)) {
+            ?>
+            <tr>
+                <td><strong>INV-<?php echo str_pad($r['id'], 3, '0', STR_PAD_LEFT); ?></strong></td>
+                <td><?php echo date('d/m/y H:i', strtotime($r['tanggal_penjualan'])); ?></td>
+                <td><?php echo $r['nama_pelanggan'] ? $r['nama_pelanggan'] : '<em style="color:#aaa;">Pelanggan Umum</em>'; ?></td>
+                <td style="color: #6367FF; font-weight: bold;">Rp <?php echo number_format($r['total_harga'],0,',','.'); ?></td>
+                <td>
+                    <a href="faktur.php?id=<?php echo $r['id']; ?>" class="btn btn-sm" style="background-color: #17a2b8;">Detail</a>
+                </td>
+            </tr>
+            <?php } ?>
+        </tbody>
+    </table>
+    <div style="margin-top: 10px; text-align: right;">
+        <a href="detail_penjualan.php" style="color: #6367FF; text-decoration: none; font-size: 14px;">Lihat Semua Riwayat &rarr;</a>
+    </div>
+</div>
+
 
 <?php
 // Yaah biasa lah.. manggil CSS dan kaki item web dari Footer.
-include 'footer.php';
+include 'frontend/footer.php';
 ?>

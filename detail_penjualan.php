@@ -1,15 +1,18 @@
 <?php
+require_once 'auth_check.php';
+?>
+<?php
 // ======= FILE: detail_penjualan.php (Riwayat Nota Histori Transaksi Keseluruhan Toko) =======
 
 // Mewajibkan jembata masuk jaringan Server MySQL zahwa_toys
-require_once 'koneksi.php';
+require_once 'backend/koneksi.php';
 
 // Memeluk dan Menyertakan Desain Muka Casing Web Kita (Bawah Kop Nav)
-include 'header.php';
+include 'frontend/header.php';
 ?>
 
 <!-- Tag Judul Teks Heading Agak besar level 2 Halaman Ini -->
-<h2>Kotak Catatan Riwayat Semua Transaksi Toko Dulu</h2>
+<h2>Riwayat Transaksi Penjualan</h2>
 
 <!-- Pakai Template Kelas Bungkus "Card" ala material UI biar bersih menonjol Putih -->
 <div class="card">
@@ -20,11 +23,11 @@ include 'header.php';
         <!-- Area THEAD (Tembok Tebal Atap Lurus Kolom Judul Tabel) -->
         <thead>
             <tr>
-                <th>No Struk / Bukti Invoice Kasir</th>
-                <th>Waktu & Tanggal Pembelian Kejadian</th>
-                <th>Penerima Barang / Nama Pelanggan</th>
-                <th>Total Nominal Belanja (Omset Uangnya)</th>
-                <th width="150px">Cek Nota Valid</th>
+                <th>No. Struk (Invoice)</th>
+                <th>Tanggal & Waktu</th>
+                <th>Nama Pelanggan</th>
+                <th>Total Pembayaran</th>
+                <th width="100px">Tindakan</th>
             </tr>
         </thead>
         
@@ -76,8 +79,8 @@ include 'header.php';
                 
                 <!-- Kotakan Aksi Buat ngedetailin rincian anak laci yang spesifik dia doang... -->
                 <td>
-                    <!-- Saat tombol detail ditekan, akan ngelompat menyebrang jalan ke file khusus pabrik nota rincian (faktur.php). Tentu bawa titipan peluru gembok `?id=nomorInvoicenya` di ekor URL agar tau apa yg dirinciin! -->
-                    <a href="faktur.php?id=<?php echo $row['id']; ?>" class="btn btn-sm" style="background-color: #17a2b8;">Lihat Rincian Barangnya</a>
+                    <!-- Tombol Detail (Faktur) -->
+                    <a href="faktur.php?id=<?php echo $row['id']; ?>" class="btn btn-sm" style="background-color: #17a2b8;">Detail</a>
                 </td>
                 
             <!-- Banting Pintu Baris Tabel Ini (Close TR), Ulangin dari pembuka loop sampe orang/nota DB nya abis !! -->
@@ -94,5 +97,5 @@ include 'header.php';
 
 <?php
 // Sama Lah.. Gabungin Bagian Elemen Kaki Hitam dan Tutup Wadah Jendela Container layot dr file footer.php disana
-include 'footer.php';
+include 'frontend/footer.php';
 ?>

@@ -17,7 +17,7 @@ session_start();
     <title>Sistem Kasir - Zahwa Toys</title>
     
     <!-- Link href= digunakan untuk mengaitkan / memanggil baju desain kita (CSS) dari file sebelah -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="frontend/style.css">
 <!-- Menutup pengaturan head -->
 </head>
 <!-- Membuka jasad web / body utama (Yang bisa dilihat oleh mata) -->
@@ -34,15 +34,15 @@ session_start();
         <ul>
             <!-- Tag li (List Item), dan <a> ini berarti tombol Hyperlink (Bisa diklik untuk lompat file) -->
             <!-- Link menuju file beranda (index) -->
-            <li><a href="index.php">Dashboard</a></li>
+            <li><a href="index.php">Beranda</a></li>
             <!-- Link menuju file master data Pelanggan -->
-            <li><a href="pelanggan.php">Pelanggan</a></li>
+            <li><a href="pelanggan.php">Data Pelanggan</a></li>
             <!-- Link menuju file master data Produk/Item jualan -->
-            <li><a href="produk.php">Produk</a></li>
+            <li><a href="produk.php">Data Produk</a></li>
             <!-- Link langsung masuk ke menu scan Mesin Kasir -->
-            <li><a href="penjualan.php">Penjualan</a></li>
+            <li><a href="penjualan.php">Transaksi Penjualan</a></li>
             <!-- Link untuk melihat riwayat atau histori struk -->
-            <li><a href="detail_penjualan.php">Detail Penjualan</a></li>
+            <li><a href="detail_penjualan.php">Riwayat Transaksi</a></li>
         <!-- Menutup tag pembungkus tombol-tombol -->
         </ul>
     <!-- Menutup tag area navigasi -->

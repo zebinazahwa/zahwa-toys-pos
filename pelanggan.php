@@ -1,12 +1,15 @@
 <?php
+require_once 'auth_check.php';
+?>
+<?php
 // ======= FILE: pelanggan.php (Halaman Tampil Daftar Member Toko) =======
 
 // Membutuhkan mantra persambungan mesin Database MySQL di XAMPP milik kita.
 // Tanpa file 'koneksi.php' disertakan, komputer nggak tau harus ngetok pintu laci pelanggan mana.
-require_once 'koneksi.php';
+require_once 'backend/koneksi.php';
 
 // Menarik paksa gabungan desain baju Layout (CSS), Judul Web, dan Deret Tombol Menu Atas (Navigasi Header)
-include 'header.php';
+include 'frontend/header.php';
 
 // === LOGIKA HAPUS DATA MEMBER ===
 // Ngecek apakah ada satpam PHP yang ngelapor kalo tombol Hapus berwarna merah di layar bawah abis dipencet?
@@ -23,7 +26,7 @@ if(isset($_GET['hapus'])) {
     // Hasil bantaiannya dievaluasi. Kalo sukses dihapus ke alam baka (True)...
     if($hapus) {
         // Tampilkan HTML teks warna daun pandan ijo muda terang dari gaya "alert-success"-nya Bootstrap buatan kita.
-        echo "<div class='alert alert-success'>Data pelanggan Sukses terhapus! Silakan lanjut kerja.</div>";
+        echo "<div class='alert alert-success'>Data pelanggan berhasil dihapus.</div>";
     }
 }
 // Nah! PHP Logika Berakhir untuk urusan hapus-hapusan.
@@ -33,11 +36,11 @@ if(isset($_GET['hapus'])) {
 
 <!-- Tag h2 untuk Tulisan Sub Judul agak lebay gedenya (Tebel dan item) -->
 <h2>
-    Data Pelanggan Toko Kami (Member)
+    Daftar Pelanggan (Member)
     <!-- Tag `a` adalah tag Jembatan Penghubung (Link) biasa.
          Disamarkan dengan make up baju clasic button ("btn").
          `float: right;` itu jurus ngambang pindah posisi ke tembok kanan. Biar tulisan ini ama tombol kepisah jauh posisinnya. -->
-    <a href="pelanggan_tambah.php" class="btn" style="float: right;">+ Rekrut Pelanggan Baru</a>
+    <a href="pelanggan_tambah.php" class="btn" style="float: right;">Tambah Pelanggan</a>
 </h2>
 
 <!-- Tag penyusun tabel, layaknya Excel di Office. Dibuka di sini. -->
@@ -48,12 +51,12 @@ if(isset($_GET['hapus'])) {
         <!-- Barisan Lurus kesamping membungkus 5 Kotakan Atap -->
         <tr>
             <!-- Kotak-kotak kecil alias Kepala Kolom TH (Table Header)  -->
-            <th>Nomor Absen</th>
+            <th>No.</th>
             <th>Nama Pelanggan</th>
-            <th>Alamatnya Dimana</th>
-            <th>Kontak Nomor HP/WA</th>
+            <th>Alamat</th>
+            <th>Nomor Telepon</th>
             <!-- Lebarnya ini dipaksa 150 Pixel gaboleh megar, karena isinya cuma dua tombol dempet (Aksi) -->
-            <th width="150px">Aksi Kasir</th>
+            <th width="150px">Tindakan</th>
         </tr>
     </thead>
     
@@ -94,12 +97,12 @@ if(isset($_GET['hapus'])) {
             <!-- Nah, ini dia. Baris koloman terakhir nampung dua tombol bahaya! -->
             <td>
                 <!-- TOMBOL MERUBAH: Pake teknik `Bawa Gembok` ke URL form sebelahnya (?id=...). Maksud gembok itu? Biar formnya paham siapa yg dituju buat diobrak-abrik! -->
-                <a href="pelanggan_edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-warning">Editkan</a>
+                <a href="pelanggan_edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-warning">Ubah</a>
                 
                 <!-- TOMBOL MENGHAPUS: Sama kaya Bawa Sandi di URL (?hapus=...).
                      CUMAN! Karena bahaya. Dikasih bumbu satpam Javascript dulu: `onclick="return confirm('...')"`.
                      Jadinya, entar ditahan dulu. Mau dihapus nggak nih Beneran? Kalau Ok, ya PHP baris atas tadi nangkap dan eksekusi SQL Hapus secara brutal. -->
-                <a href="pelanggan.php?hapus=<?php echo $row['id']; ?>" onclick="return confirm('Yakin ingin mendepak pembeli langganan ini?')" class="btn btn-sm btn-danger">Hapus</a>
+                <a href="pelanggan.php?hapus=<?php echo $row['id']; ?>" onclick="return confirm('Apakah Anda yakin ingin menghapus data pelanggan ini?')" class="btn btn-sm btn-danger">Hapus</a>
             </td>
         <!-- Cekrek! Potong baris orang per-orang selesai. -->
         </tr>
@@ -115,5 +118,5 @@ if(isset($_GET['hapus'])) {
 
 <?php
 // PHP memanggil stempel hak cipta (footer/footer) warna perak di bawah halaman dan nutup DIV bodong agar layout web tak ambyar ke mana-mana...
-include 'footer.php';
+include 'frontend/footer.php';
 ?>

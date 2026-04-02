@@ -1,11 +1,14 @@
 <?php
+require_once 'auth_check.php';
+?>
+<?php
 // ======= FILE: produk_tambah.php (Halaman Form Untuk Memasukkan Mainan Baru) =======
 
 // Syarat Utama PHP: Melakukan interogasi ke jembatan koneksi.php agar kita bisa mengobrol dengan database
-require_once 'koneksi.php';
+require_once 'backend/koneksi.php';
 
 // Memanggil desain visual Header Top agar logo dan menunya termunculkan ke Layar monitor
-include 'header.php';
+include 'frontend/header.php';
 
 // ==== BLOK LOGIKA (BAGIAN SULAP PENYIMPANAN DATA SAAT TOMBOL SUMBIT DITEKAN) ====
 
@@ -31,12 +34,12 @@ if(isset($_POST['simpan'])) {
     if($simpan) {
         // Cara Jitu Memperingatkan Pemilik pakai PHP dan Javascript.
         // echo script ini langsung nembakin Javascript Pop-up (alert), dan kalau diOK, otomatis browser mental ke halaman `window.location='produk.php'` . Nggak ribet!
-        echo "<script>alert('Produk baru sudah mantap masuk gudang databasemu Kak!'); window.location='produk.php';</script>";
+        echo "<script>alert('Data produk baru telah berhasil disimpan.'); window.location='produk.php';</script>";
         
     // Kalau database nolak atau error (Misal server lagi offline/ada kesemrawutan nama tabel)
     } else {
         // Tampilkan Teks Kotakan Merah di atas halaman. "Gagal"
-        echo "<div class='alert alert-danger'>Peringatan: Website Gagal menyimpan database produk! Konsultasikan ke Programmernya!</div>";
+        echo "<div class='alert alert-danger'>Gagal menyimpan data produk. Silakan hubungi administrator sistem.</div>";
     }
 }
 // Akhir blok sulapnya ya! 
@@ -45,7 +48,7 @@ if(isset($_POST['simpan'])) {
 <!-- ==== BAGIAN TAMPILAN (PEMBUATAN FORMULAR HTML MURNI) ==== -->
 
 <!-- Judul Halaman di atas Form -->
-<h2>Tambah Produk Mainan Baru</h2>
+<h2>Tambah Produk Baru</h2>
 
 <!-- Membungkus ruang lembar kerja dengan Card/Kartu biar mirip desain Google Material (Berada di tengah sedikit timbul bayangannya) -->
 <div class="card">
@@ -56,30 +59,30 @@ if(isset($_POST['simpan'])) {
         <!-- Bungkus input grup biar rapi dan dilonggarkan spasi (margin-bottom) -->
         <div class="form-group">
             <!-- Label hanya untuk tulisan pemanis penjelas kotak isian di bawahnya -->
-            <label>Nama Produk / Tipe Mainan Baru</label>
+            <label>Nama Produk</label>
             <!-- Kotak untuk diketik (input), tipe bebas huruf/angka (text). Name="nama" adalah GANTUNGAN yang jadi nama alamat buat kurir POST PHP menangkap nilainya nanti. Parameter required (berarti wajib ngisi / tidak boleh dikosongkan) -->
-            <input type="text" name="nama" class="form-control" required placeholder="Contoh Pemasukan: Boneka Teddy Bear / Puzzle Frozen">
+            <input type="text" name="nama" class="form-control" required placeholder="Contoh: Boneka Teddy Bear">
         </div>
         
         <!-- Grup isian baris kedua -->
         <div class="form-group">
-            <label>Harga Barang dalam Satuan Rupiah (Tanpa titik)</label>
+            <label>Harga (Rupiah)</label>
             <!-- Tipe Number artinya user bodoh/usil gabakalan bisa mencetin tombol Spasi, A-Z. Cuma angka. Atribut Min=0 Biar gak minus. Namanya ditangkap pakai gembok 'harga'. -->
-            <input type="number" name="harga" class="form-control" required placeholder="Contoh Pemasukan: 150000" min="0">
+            <input type="number" name="harga" class="form-control" required placeholder="Contoh: 150000" min="0">
         </div>
         
         <!-- Grup baris ketiga (Terkahir untuk stok awal barang tsb hadir di toko) -->
         <div class="form-group">
-            <label>Stok Ketersediaan Jumlah Awal (PCS/Biji)</label>
-            <input type="number" name="stok" class="form-control" required placeholder="Contoh Persediaan: 10" min="0">
+            <label>Jumlah Stok</label>
+            <input type="number" name="stok" class="form-control" required placeholder="Contoh: 10" min="0">
         </div>
         
         <!-- Nah ini mesin pemicu/pemukul bola-nya (Tombol Submit). Atribut name="simpan" inilah yang bakal ngetring ke antena PHP (if-isset($_POST['simpan']) di baris 11 di atas tadi. -->
-        <button type="submit" name="simpan" class="btn">Simpan Kedalam Etalase</button>
+        <button type="submit" name="simpan" class="btn">Simpan Data</button>
         
         <!-- Ini adalah Tombol Pasif (cuma pakai tag hyperlink a) yang dilempar balik aja kalau user mau membatalkan/balik arah -->
         <!-- Css memakaikan baju khusus yaitu btn-danger biar warnanya beda (merah peringatan), mengandalkan mata/perilaku visual (UX Design).  -->
-        <a href="produk.php" class="btn btn-danger">Batalkan / Mundur</a>
+        <a href="produk.php" class="btn btn-danger">Batal</a>
     
     <!-- Tutup pintu bungkus Formulirnya -->
     </form>
@@ -88,5 +91,5 @@ if(isset($_POST['simpan'])) {
 
 <?php
 // Seperti halnya yang sering terucap, sebuah website yang baik tak boleh lupa dipakaikan alas kaki (Footer)
-include 'footer.php';
+include 'frontend/footer.php';
 ?>

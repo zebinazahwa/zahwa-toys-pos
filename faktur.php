@@ -1,11 +1,14 @@
 <?php
+require_once 'auth_check.php';
+?>
+<?php
 // ======= FILE: faktur.php (Surat Struk Rincian Kertas Bukti Yang Akan Dicetak PDF/Kertas Toko) =======
 
 // Memanggil Kabel Listrik Jaringan Ke Database zahwa_toys Xampp! Wajib..
-require_once 'koneksi.php';
+require_once 'backend/koneksi.php';
 
 // Menyelipkan Topi Navbar dan Kertas Dasar Web dr Header..
-include 'header.php';
+include 'frontend/header.php';
 
 // === LANGKAH 1: NANGKAP SURAT PENGANTAR (KODE NOTA) ===
 // Menarik/Mengambil ID peluru transaksi yang mau ditampilkan khusus ini ke layar.
@@ -30,17 +33,17 @@ $penjualan = mysqli_fetch_assoc($q_penjualan);
 <!-- === LAYOUT KANVAS KHUSUS PAPAN PENCETAKAN HTML BUKTI FAKTUR === -->
 
 <!-- KEPALA STRUK KERTAS: Judul Kertas Struk Besar... Tambahin Nomor Struknya (Bantalyng 3 Spansi Nol di Kiri ID pakai str_pad PHP kyk kmren INV-003) -->
-<h2>Faktur Resmi Pembayaran Valid : INV-<?php echo str_pad($penjualan['id'], 3, '0', STR_PAD_LEFT); ?></h2>
+<h2>Faktur Pembayaran : INV-<?php echo str_pad($penjualan['id'], 3, '0', STR_PAD_LEFT); ?></h2>
 
 <!-- Badan Kertas Invoice/Bagian Putih -->
 <!-- Disematkan ID CSS id="area-cetak" . Biasanya Programmer kalo bikin JavaScript Advanced buat printer kasir thermal, mereka ngambil layar yang isinya cuman id ini doang utk diprint ngehindar nabrak Tombol di layarnya. -->
 <div class="card" id="area-cetak">
     
     <!-- Data Paragraph: Tgl waktu beli. Dicetak dan Dikonversi Format Indonya Pake PHP Date Function -->
-    <p><strong>Waktu Konfirmasi Transaksi:</strong> <?php echo date('d M Y H:i', strtotime($penjualan['tanggal_penjualan'])); ?></p>
+    <p><strong>Tanggal & Waktu Transaksi:</strong> <?php echo date('d M Y H:i', strtotime($penjualan['tanggal_penjualan'])); ?></p>
     
     <!-- Data Prragraph: Kepada Yth Pembeli. Menggunakan Operator (?) -> Kalo bukan Member MySQL (Alias nama orgnya KOSONG), Maka tulis Teks Asal "Pembeli Biasa Umum" -->
-    <p><strong>Atas Layanan Pelanggan Nama:</strong> <?php echo $penjualan['nama_pelanggan'] ? $penjualan['nama_pelanggan'] : 'Pembeli Biasa / Transaksi Umum Bebas'; ?></p>
+    <p><strong>Pelanggan:</strong> <?php echo $penjualan['nama_pelanggan'] ? $penjualan['nama_pelanggan'] : 'Pelanggan Umum'; ?></p>
     
     <!-- Sedikit Baju CSS Garis horizontal melintang pembatas atas tabel dan tulisan kepala surat atas... -->
     <hr style="margin: 15px 0;">
@@ -50,10 +53,10 @@ $penjualan = mysqli_fetch_assoc($q_penjualan);
         <!-- Kop Kolom Atap Judul -->
         <thead>
             <tr>
-                <th>Nama Produk (Item Mainan List)</th>
-                <th>Tarik Harga Per Satuan Barang</th>
-                <th>Qty Kuantitas Borong (Jumlah)</th>
-                <th>Subtotal Potongan (Mata Uang Total)</th>
+                <th>Nama Produk</th>
+                <th>Harga Satuan</th>
+                <th>Jumlah</th>
+                <th>Subtotal</th>
             </tr>
         </thead>
         
@@ -85,7 +88,7 @@ $penjualan = mysqli_fetch_assoc($q_penjualan);
                 <td>Rp <?php echo number_format($dt['subtotal'] / $dt['jumlah_produk'], 0, ',', '.'); ?></td>
                 
                 <!-- Pamerkan angka Jumlah produk Unit pcs nya yg dimemori db nya  -->
-                <td><?php echo $dt['jumlah_produk']; ?> Unit Buah</td>
+                <td><?php echo $dt['jumlah_produk']; ?> Unit</td>
                 
                 <!-- Cetak Uang Murni subtotal hitungan SQL buat anak ini doang. -->
                 <td>Rp <?php echo number_format($dt['subtotal'], 0, ',', '.'); ?></td>
@@ -98,7 +101,7 @@ $penjualan = mysqli_fetch_assoc($q_penjualan);
         <tfoot style="background:#fff3f3; color:#333;">
             <tr >
                 <!-- Kolom disatukan biar Teks Geser Rata KAnan Polos 3 Papan Meja (colspan=3) -->
-                <th colspan="3" style="text-align: right;">Total Mutlak Pembayaran Keseluruhan Asli Nota Ini:</th>
+                <th colspan="3" style="text-align: right;">Total Pembayaran:</th>
                 <!-- Tampilkan TOTAL KESELURUHAN BILL dr laci Penjualan Kepala yg paling awal tadi kita ambil diatas ($penjualan) -->
                 <!-- Fontnya di merahin, digedein level dewa (18px pixelss) -->
                 <th style="color:red; font-size:18px;">Rp <?php echo number_format($penjualan['total_harga'], 0, ',', '.'); ?></th>
@@ -108,21 +111,18 @@ $penjualan = mysqli_fetch_assoc($q_penjualan);
     </table>
     
     <!-- Area Menu FUNGSI Tombol Tergantung Dibawah... -->
-    <div style="margin-top: 30px; text-align: left;">
+    <div style="margin-top: 30px; display: flex; gap: 10px; justify-content: flex-start;">
         
         <!-- Tombol Tulis CSS biasa buat melarikan diri kembali ke Riwayat Laporan Toko (detail_penjualan)  -->
-        <a href="detail_penjualan.php" class="btn btn-warning" style="margin-right:20px;">  Kembali Ke Riwayat Panel Toko Yaa </a>
+        <a href="detail_penjualan.php" class="btn btn-warning">  Kembali </a>
         
         <!-- JURUS SDEWA KLIK CETAK PDF HTML/KERTAS KASIR MURNI --->
-        <!-- Memanfaatkan fitur Javascript bawaan Internet Broser Chrome/Edge bernama 'window.print()'.
-             Ketika ini diklik, Browser langsung men-SCREENSHOT Halaman ini dan membuka dialog kotak jendela PRINTER / Save To PDF tanpa butuh File/library External lagi!! -->
-        <!-- Dilengkapi Icon image Gambar Printing cantik CSS dikit dr URL server icons8 biar ga sepi wekeke -->
-        <button onclick="window.print()" class="btn" style="background-color: #333; padding: 10px 20px;"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/print.png" alt="print" style="width:16px; margin-bottom:-2px; margin-right:5px;"/> Cetak Struk Bon (Printer Kasir Toko Kertas) Thermal / Kertas Bon PDF</button>
+        <button onclick="window.print()" class="btn" style="background-color: #333;"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/print.png" alt="print" style="width:16px; margin-bottom:-2px; margin-right:5px;"/> Cetak Struk</button>
         
     </div>
 </div>
 
 <?php
 // PHP Biasaa, Nempelin Muka Footer item Bawah yg Ada taun tahun dinamisnya ituuh
-include 'footer.php';
+include 'frontend/footer.php';
 ?>

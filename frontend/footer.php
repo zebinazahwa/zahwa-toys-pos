@@ -12,10 +12,8 @@
     
     <!-- Tag PHP di tengah HTML ini cuma numpang mampir. -->
     <!-- Tujuan echo date('Y') adalah supaya angka tahun di kaki web kita tidak perlu diketik manual. Dia nambah tahun otomatis (Tahun 2026, 2027 besok otomatis ganti sendiri) sesuai jam Server (Y = Year 4 digit) -->
-    <?php echo date('Y'); ?> 
-    
     <!-- Tulisan nama proyek pesanan kita -->
-    Zahwa Toys. Dibuat dengan cinta untuk belajar pemrograman web.
+    Zahwa Toys. Hak Cipta &copy; <?php echo date('Y'); ?>. Sistem Manajemen Inventaris dan Penjualan Berbasis Web.
     
 <!-- Menutup batas kaki web secara mutlak -->
 </footer>

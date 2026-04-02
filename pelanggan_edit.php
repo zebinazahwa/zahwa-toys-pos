@@ -1,11 +1,14 @@
 <?php
+require_once 'auth_check.php';
+?>
+<?php
 // ======= FILE BEDAH / RUANG OPERASI: pelanggan_edit.php =======
 
 // Ngobrol sama File koneksi dulu (Akses Pintu Gerbang Terbuka)
-require_once 'koneksi.php';
+require_once 'backend/koneksi.php';
 
 // Memangill elemen Header Top Design
-include 'header.php';
+include 'frontend/header.php';
 
 // Nangkep Identitas Rahasia Dari Surat Undangan di URL `?id=123`.
 // Artinya: PHP tolong catat `ID=123` pakai jaring jaring bernama `$_GET['id']` terus diikat kuat pada nama variabel `$id`.
@@ -38,12 +41,12 @@ if(isset($_POST['update'])) {
     // Kalau berhasil meluncur tak kembali (TRUE)
     if($update) {
         // JS Alert nampilin ucapan selamat, langsung window.location ngangkut manusianya ke terminal pelanggan.php (Tabel Semula yg ngebosenin td)
-        echo "<script>alert('SIPP ALHAMDULLILLAH!! Revisi profil pelanggan sudah termodifikasi!'); window.location='pelanggan.php';</script>";
+        echo "<script>alert('Data pelanggan berhasil diperbarui.'); window.location='pelanggan.php';</script>";
         
     // Kalau database SQL nya nangis nge-glitch .. 
     } else {
         // Muncullah box menakutkan HTML merah memperingatkan..
-        echo "<div class='alert alert-danger'>Yahh Gagal diubah kak datanya. Coba lagi yee...</div>";
+        echo "<div class='alert alert-danger'>Gagal memperbarui data pelanggan. Silakan hubungi administrator sistem.</div>";
     }
 }
 ?>
@@ -51,7 +54,7 @@ if(isset($_POST['update'])) {
 <!-- === STUDIO UTAMA TAMPILAN FORM EDITING === -->
 
 <!-- Tag Heading penjelas fungsi sub menu ini untuk si A -->
-<h2>Revisi Riwayat Data Pelanggan </h2>
+<h2>Ubah Data Pelanggan</h2>
 
 <!-- CSS Kotak Bersih Berbayang Putih (Card Box Shadowing Style) -->
 <div class="card">
@@ -61,7 +64,7 @@ if(isset($_POST['update'])) {
         
         <div class="form-group">
             <!-- Peringatan nama apa ini -->
-            <label>Nama Anda (Pelanggan)</label>
+            <label>Nama Lengkap</label>
             
             <!-- BEDANYA AMA TAMBAH APA? Nahh Disini lho seninya PHP campur aduk HTML. -->
             <!-- Atribut Value="...." Ini Fungsinya Menyusupkan Data Text Lawas MySQL ($data['nama...']) kedalam lobang Input, SEBELUM pengunjung ngetik apapun. 
@@ -71,27 +74,27 @@ if(isset($_POST['update'])) {
         </div>
         
         <div class="form-group">
-            <label>Alamat Pengantaran / Domisili Mainan</label>
+            <label>Alamat</label>
             <!-- Karena dia Textarea.. Gak punya Atribut 'Value'. Nenyusupkan teks nya itu di tengah-tengah / diapit tag penutupnya dan membukanya tuh lhoo  -->
             <textarea name="alamat" class="form-control" rows="3"><?php echo htmlspecialchars($data['alamat'] ?? ''); ?></textarea>
         </div>
         
         <div class="form-group">
-            <label>Nomor Urut Telepon yang Aktif</label>
+            <label>Nomor Telepon</label>
             <!-- Numpang masukin memori ke-telepon sebagai teks isian asal mula -->
             <input type="text" name="telepon" class="form-control" value="<?php echo htmlspecialchars($data['nomor_telepon'] ?? ''); ?>">
         </div>
         
         <!-- Pintu Gerbang Eksekusi Truk POST ('update') ... Dorong!!! -->
-        <button type="submit" name="update" class="btn">Timpa Teks Dan Simpan Secara Permanen Ya</button>
+        <button type="submit" name="update" class="btn">Simpan Perubahan</button>
         
         <!-- Jalan Pintas Buat Mundur Ngabur dari Halaman ini -->
-        <a href="pelanggan.php" class="btn btn-danger">Halahh, Males ngedit, Balik Ajalah (Batal)!</a>
+        <a href="pelanggan.php" class="btn btn-danger">Batal</a>
         
     </form>
 </div>
 
 <?php
 // PHP Pemasang Ujung Kaki Sepatu (Penutup Body web nya)!
-include 'footer.php';
+include 'frontend/footer.php';
 ?>

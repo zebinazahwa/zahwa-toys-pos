@@ -1,11 +1,13 @@
 <?php
+require_once 'auth_check.php';
+
 // ======= FILE: produk.php (Daftar Mainan) =======
 
 // Memanggil gerbang koneksi ke database Zahwa Toys
-require_once 'koneksi.php';
+require_once 'backend/koneksi.php';
 
 // Menempelkan desain header dan menu dari file potongan header.php ke dalam layar paling atas
-include 'header.php';
+include 'frontend/header.php';
 
 // == BLOK LOGIKA (OTAK PHP) UNTUK MENGHAPUS DATA KALAU TOMBOL HAPUS SITEKAN ==
 
@@ -23,11 +25,11 @@ if(isset($_GET['hapus'])) {
     // Cek sukses tidaknya: Jika proses di laci berhasil dihapus (True)...
     if($hapus) {
         // Tampilkan peringatan sukses yang berwarna hijau HTML (Karena pakai class 'alert-success' CSS yang kita punya)
-        echo "<div class='alert alert-success'>Data produk berhasil dihapus secara bersih (Clean)!</div>";
+        echo "<div class='alert alert-success'>Data produk berhasil dihapus.</div>";
     // TAPI kalau ditolak database... (Biasanya ditolak kalau barang tsb rupanya masih ada di riwayat bon bekas penjualan)
     } else {
         // Tampilkan kotak peringatan merah (alert-danger)...
-        echo "<div class='alert alert-danger'>Gagal Dihapus! Data mainan ini mungkin masih terikat aman di dokumen riwayat penjualan bulan lalu.</div>";
+        echo "<div class='alert alert-danger'>Gagal menghapus data. Produk ini masih tercatat dalam riwayat transaksi.</div>";
     }
 }
 // Selesai Blok Logika PHP-nya. Sisanya adalah urusan wajah HTML.
@@ -35,11 +37,11 @@ if(isset($_GET['hapus'])) {
 
 <!-- Tag Heading 2 mencetak tulisan tebal Judul -->
 <h2>
-    Data Produk
+    Daftar Produk
     <!-- Tag a (Hyperlink), yaitu tombol panah navigasi yang disulap jadi bentuk tombol (Class="btn") -->
     <!-- Jika diklik, pengguna akan dilempar menyebrang menuju file pengisi form baru ('produk_tambah.php') -->
     <!-- float:right digunakan untuk nendang tombol ini geser mentok ke dinding sisi Kanan layarnya -->
-    <a href="produk_tambah.php" class="btn" style="float: right;">+ Tambah Produk</a>
+    <a href="produk_tambah.php" class="btn" style="float: right;">Tambah Produk</a>
 </h2>
 
 <!-- Tag Table: Ini adalah pembentuk matriks baris kolom layaknya Ms. Excel -->
@@ -49,7 +51,7 @@ if(isset($_GET['hapus'])) {
         <!-- TR (Table Row) = Membuka sebuah baris lurus mendatar -->
         <tr>
             <!-- TH (Table Headering/Kolom) = Kotakan judul pertama, yaitu Nomor -->
-            <th>No</th>
+            <th>No.</th>
             <!-- TH = Kotak judul kedua, yaitu Nama -->
             <th>Nama Produk</th>
             <!-- TH = Kotak ketiga: Harga rupiah -->
@@ -57,7 +59,7 @@ if(isset($_GET['hapus'])) {
             <!-- TH = Kotakan Stock -->
             <th>Stok</th>
             <!-- TH = Kotakan buat ngeletakin tombol-tombol yang memakan lebar khusus 150 pixel mutlak -->
-            <th width="150px">Aksi</th>
+            <th width="150px">Tindakan</th>
         </tr>
     </thead>
     
@@ -97,11 +99,11 @@ if(isset($_GET['hapus'])) {
             <!-- TD: Nah bagian ini yang unik, yaitu kotak khusus tempat tombol-tombol operasional -->
             <td>
                 <!-- Membikin tombol "Edit" dengan Hyperlink. Dia ini lompat ke laci 'produk_edit.php' TAPI diselundupkan kunci gembok bertuliskan ?id= (contoh ?id=5). Gunanya biar form tujuannya langsung kenal sapa yang ngetok pintunya -->
-                <a href="produk_edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-warning">Edit</a>
+                <a href="produk_edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-warning">Ubah</a>
                 
                 <!-- Membikin tombol "Hapus". Sama kaya pasrahin gembok rahasia ?hapus=10 dari URL. -->
                 <!-- Menambahkan bumbu onclick bawaan browser (Javascript Confirm Box) supaya muncul POP UP "U Are Sure" agar user gak ketidaksengajaan terpecet delete sembarangan -->
-                <a href="produk.php?hapus=<?php echo $row['id']; ?>" onclick="return confirm('Yakin menghapus produk ini?')" class="btn btn-sm btn-danger">Hapus</a>
+                <a href="produk.php?hapus=<?php echo $row['id']; ?>" onclick="return confirm('Apakah Anda yakin ingin menghapus produk ini?')" class="btn btn-sm btn-danger">Hapus</a>
             </td>
         <!-- Menutup baris mendatar -->
         </tr>
@@ -117,5 +119,5 @@ if(isset($_GET['hapus'])) {
 
 <?php
 // Tak lupa kita panggil kode file tersembunyi berisikan penutup desain (kaki-kaki hitam bawah) bernama footer.php
-include 'footer.php';
+include 'frontend/footer.php';
 ?>

@@ -1,11 +1,14 @@
 <?php
+require_once 'auth_check.php';
+?>
+<?php
 // ======= FILE: produk_edit.php (Pusat Operasi Bedah/Mengubah Mainan dari yang Sudah Ada) =======
 
 // Membutuhkan tali sambungan database secara wajib dari file koneksi
-require_once 'koneksi.php';
+require_once 'backend/koneksi.php';
 
 // Tempelkan tampilan navigasi atas web dari template yang disetujui (header.php)
-include 'header.php';
+include 'frontend/header.php';
 
 // MEMERIKSA PERINTAH URL SI PEMANGGIL (Siapa Korbannya?)
 // Kita ambil nomor ID yang tertempel pada url misalnya di jendela: ?id=7
@@ -40,12 +43,12 @@ if(isset($_POST['update'])) {
     // Jika proses update tabel benar dan lancar dieksekusi ...
     if($update) {
         // Javascript mencetak Notifikasi Alert Pop-UP dan melempar halaman pulang kembali ke gudang produk utama!
-        echo "<script>alert('Sip! Spesifikasi Mainan ini berhasil direvisi ya!'); window.location='produk.php';</script>";
+        echo "<script>alert('Data produk berhasil diperbarui.'); window.location='produk.php';</script>";
         
     // Kalau salah/server ke-block ...
     } else {
         // Print Kotak Peringatan Warna Merah HTML CSS ...
-        echo "<div class='alert alert-danger'>Yahh Gagal diubah deh produknya. Sistem lagi rewel kali?</div>";
+        echo "<div class='alert alert-danger'>Gagal memperbarui data produk. Silakan hubungi administrator sistem.</div>";
     }
 }
 ?>
@@ -53,7 +56,7 @@ if(isset($_POST['update'])) {
 <!-- === LAYOUT PEMANDANGAN HALAMAN EDITAN === -->
 
 <!-- Judul Gede Untuk Web -->
-<h2>Operasi Edit Data Produk</h2>
+<h2>Ubah Data Produk</h2>
 
 <!-- Mengemas di Kotak Cantik Berkelas 'Card' (yang bikin putih menyala) -->
 <div class="card">
@@ -62,7 +65,7 @@ if(isset($_POST['update'])) {
     <form method="POST" action="">
         <!-- Jarak barisa renggang untuk Nama Produk -->
         <div class="form-group">
-            <label>Penggantian Nama Produk / Nama Mainan</label>
+            <label>Nama Produk</label>
             <!-- TRIK UTAMA EDIT: Atribut `value=" "` kita sematkan. Dan kita sisipkan ECHO PHP `$data[...]`! 
                  Tujuan Trik ini? Biar kotak isiannya TIDAK KOSONG pas halaman baru termuat. Isiannya kita jejali dari data lawas/lama secara default. -->
             <input type="text" name="nama" class="form-control" value="<?php echo htmlspecialchars($data['nama_produk'] ?? ''); ?>" required>
@@ -70,7 +73,7 @@ if(isset($_POST['update'])) {
         
         <!-- Jarak barisa grup untuk Harga Lama -->
         <div class="form-group">
-            <label>Setel Ulang Harga Asli Satuan Rupiah (Tanpa titik koma)</label>
+            <label>Harga (Rupiah)</label>
             <!-- Menampilkan secara bawaan value array asosiatif hasil query ke-[harga] sebelumnya. -->
             <!-- Jika array kosong/null (karena misalnya ID gak valid), ya kasih angka sakti '0' lewat syntax ( ?? '0' ) -->
             <input type="number" name="harga" class="form-control" value="<?php echo $data['harga'] ?? '0'; ?>" required min="0">
@@ -78,21 +81,21 @@ if(isset($_POST['update'])) {
         
         <!-- Kelompok baris isian khusus Stok tersisa ... -->
         <div class="form-group">
-            <label>Koreksi Jumlah Stok Asli (PCS)</label>
+            <label>Jumlah Stok</label>
             <!-- Menyematkan memori hasil select $data['stok'] sebagai pre-filed kotak angkanya -->
             <!-- min="0" untuk proteksi frontend biar pengunjung gak ngetik stock minus. -->
             <input type="number" name="stok" class="form-control" value="<?php echo $data['stok'] ?? '0'; ?>" required min="0">
         </div>
         
         <!-- Tombol Tipe Submission Pemantik. Begitu dipencet ke kiri... data ngalir ke Method POST di baris 17 atas... BOOM! -->
-        <button type="submit" name="update" class="btn">Timpa Dan Simpan Perubahan Ini</button>
+        <button type="submit" name="update" class="btn">Simpan Perubahan</button>
         
         <!-- Jembatan lompat hyper-link biasa (bukan tombool submit). Untuk kabur menghindar dari ngedit... -->
-        <a href="produk.php" class="btn btn-danger">Aduh Ga Jadi Deh (Balik)</a>
+        <a href="produk.php" class="btn btn-danger">Batal</a>
     </form>
 </div>
 
 <?php
 // Ya biasa aja sihh.. Penutup doang buat tempelan bagian warna gelap bawah di CSS (Kaki Footer)...
-include 'footer.php';
+include 'frontend/footer.php';
 ?>
